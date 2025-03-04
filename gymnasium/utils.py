@@ -343,8 +343,8 @@ def display_table(current_state, action, next_state, reward, done):
             (STATE_VECTOR_COL_NAME, 'Velocity', 'Y (Vertical)'): get_state(3),
             (STATE_VECTOR_COL_NAME, 'Tilting', 'Angle'): get_state(4),
             (STATE_VECTOR_COL_NAME, 'Tilting', 'Angular Velocity'): get_state(5),
-            (STATE_VECTOR_COL_NAME, 'Ground contact', 'Left Leg?'): get_state(6, np.bool),
-            (STATE_VECTOR_COL_NAME, 'Ground contact', 'Right Leg?'): get_state(7, np.bool),
+            (STATE_VECTOR_COL_NAME, 'Ground contact', 'Left Leg?'): get_state(6, bool),
+            (STATE_VECTOR_COL_NAME, 'Ground contact', 'Right Leg?'): get_state(7, bool),
             (DERIVED_COL_NAME, 'Distance from landing pad', ''): get_state(8),
             (DERIVED_COL_NAME, 'Velocity', ''): get_state(9),
             (DERIVED_COL_NAME, 'Tilting Angle (absolute value)', ''): get_state(10),
@@ -420,14 +420,14 @@ def create_video(filename, env, q_network, fps=30):
 
     with imageio.get_writer(filename, fps=fps) as video:
         done = False
-        state = env.reset()
-        frame = env.render(mode="rgb_array")
+        state, _ = env.reset()
+        frame = env.render()
         video.append_data(frame)
         while not done:
             state = np.expand_dims(state, axis=0)
             q_values = q_network(state)
             action = np.argmax(q_values.numpy()[0])
-            state, _, done, _ = env.step(action)
-            frame = env.render(mode="rgb_array")
+            state, _, done, _, _ = env.step(action)
+            frame = env.render()
             video.append_data(frame)
 
